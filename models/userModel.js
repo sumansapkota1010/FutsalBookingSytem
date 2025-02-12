@@ -24,6 +24,9 @@ const userSchema = new schema(
       enum: ["player", "admin"],
       default: "player",
     },
+    otp:{
+        type: Number
+    }
   },
   {
     timestamps: true,
