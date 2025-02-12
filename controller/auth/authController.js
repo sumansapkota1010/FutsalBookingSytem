@@ -98,3 +98,32 @@ exports.forgetPassword = async (req, res) => {
     message: "Email sent successfully",
   });
 };
+
+//verify otp
+exports.verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) {
+    return res.status(400).json({
+      message: "Please provide email and otp",
+    });
+  }
+
+  // check if that otp is correct or not of that email
+  const userExists = await User.find({ userEmail: email });
+  if (userExists.length == 0) {
+    return res.status(400).json({
+      message: "Email is not registered",
+    });
+  }
+  if (userExists[0].otp !== otp) {
+    res.status(400).json({
+      message: "Invalid otp",
+    });
+  } else {
+    userExists[0].otp = undefined;
+    await userExists[0].save();
+    res.status(200).json({
+      message: "Otp is correct",
+    });
+  }
+};
