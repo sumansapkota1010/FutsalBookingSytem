@@ -120,10 +120,36 @@ exports.verifyOtp = async (req, res) => {
       message: "Invalid otp",
     });
   } else {
+    //dispost the otp so that it cannot be used next time the same otp
     userExists[0].otp = undefined;
     await userExists[0].save();
     res.status(200).json({
       message: "Otp is correct",
     });
   }
+};
+
+exports.resetPassword = async (req, res) => {
+  const { email, newPassword, confirmPassword } = req.body;
+  if (!email || !newPassword || !confirmPassword) {
+    return res.status(400).json({
+      message: "Please provide email,newpassword and confirm password",
+    });
+  }
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({
+      message: "New password and confirm password doesnot match",
+    });
+  }
+  const userExists = await User.find({ userEmail: email });
+  if (userExists.length == 0) {
+    return res.status({
+      message: "Email is not registered",
+    });
+  }
+  userExists[0].userPassword = bcrypt.hashSync(newPassword, 10);
+  await userExists[0].save();
+  res.status(200).json({
+    message: "Password changed successfully",
+  });
 };
