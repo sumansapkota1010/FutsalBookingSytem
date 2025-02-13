@@ -9,12 +9,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const authRoute = require("./routes/auth/authRoutes");
+const groundRoute = require("./routes/groundRoute/groundRoute");
 
 //database connection
 connectDB(process.env.MONGO_URI);
 
 //routes
 app.use("/api", authRoute);
+app.use("/api", groundRoute);
 
 app.get("/", (req, res) => {
   res.status(200).json({

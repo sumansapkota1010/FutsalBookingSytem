@@ -18,4 +18,6 @@ const slotSchema = new mongoose.Schema({
   price: { type: Number, required: true },
 });
 
-module.exports = mongoose.model("Slot", slotSchema);
+const Slot = mongoose.model("Slot", slotSchema);
+
+module.exports = Slot;
