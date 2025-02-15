@@ -7,18 +7,20 @@ const { multer, storage } = require("../../middleware/multerConfig");
 const singleGround = require("../../controller/ground/singleGround");
 const updateGround = require("../../controller/ground/updateGround");
 const deleteGround = require("../../controller/ground/deleteGround");
+const catchAsync = require("../../services/catchAsync");
 const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-router.route("/getground").get(isAuthenicated, getGround);
+router.route("/getground").get(isAuthenicated, catchAsync(getGround));
+console.log("createGround:", createGround);
 router
   .route("/createground")
   .post(
     isAuthenicated,
     restrictTo("admin"),
     upload.single("groundImage"),
-    createGround
+    catchAsync(createGround)
   );
 router.route("/singleground/:id").get(isAuthenicated, singleGround);
 router
@@ -27,10 +29,10 @@ router
     isAuthenicated,
     restrictTo("admin"),
     upload.single("groundImage"),
-    updateGround
+    catchAsync(updateGround)
   );
 router
   .route("/deleteground/:id")
-  .delete(isAuthenicated, restrictTo("admin"), deleteGround);
+  .delete(isAuthenicated, restrictTo("admin"), catchAsync(deleteGround));
 
 module.exports = router;
