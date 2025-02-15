@@ -3,8 +3,8 @@ const { promisify } = require("util");
 const User = require("../models/userModel");
 
 const isAuthenicated = async (req, res, next) => {
-  const token = req.headers.authorization;
-  console.log(token);
+  const token = req.headers.authorization?.split(" ")[1];
+
   if (!token) {
     return res.status(400).json({
       message: "Please provide token",

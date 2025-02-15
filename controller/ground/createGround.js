@@ -11,6 +11,12 @@ const createGround = async (req, res) => {
       slots,
       reviews,
     } = req.body;
+    if (!name || !location || !image || pricePerHour || !operatingHours) {
+      return res.status(400).json({
+        message:
+          "Please provide name,location,image,pricePerHour and operatingHours ",
+      });
+    }
 
     const ground = await Ground.create({
       name,

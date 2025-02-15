@@ -1,4 +1,5 @@
 const User = require("./models/userModel");
+const bcrypt = require("bcrypt");
 
 const adminSeeder = async () => {
   //admin exists garxa ki gardaina
@@ -7,7 +8,7 @@ const adminSeeder = async () => {
     await User.create({
       userName: "admin",
       userEmail: "admin@gmail.com",
-      userPassword: "admin@12345",
+      userPassword: bcrypt.hashSync("admin", 10),
       userPhoneNumber: 9840300084,
       role: "admin",
     });
