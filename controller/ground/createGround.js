@@ -1,6 +1,16 @@
 const Ground = require("../../models/groundModel");
 
 const createGround = async (req, res) => {
+  const file = req.file;
+  console.log(file);
+  let filepath;
+  if (!file) {
+    filepath =
+      "https://www.playspots.in/booking-spot/sangzika-futsal-ground-tuivamit-aizawl-mizoram/";
+  } else {
+    filepath = req.file.filename;
+  }
+
   const {
     name,
     location,
@@ -22,7 +32,7 @@ const createGround = async (req, res) => {
     name,
     location,
     pricePerHour,
-    image,
+    image: "http://localhost:3000/" + filepath,
     operatingHours,
     slots,
     reviews,

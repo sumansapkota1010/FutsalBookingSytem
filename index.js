@@ -8,6 +8,8 @@ require("dotenv").config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(express.static("uploads"));
+
 const authRoute = require("./routes/auth/authRoutes");
 const groundRoute = require("./routes/groundRoute/groundRoute");
 
