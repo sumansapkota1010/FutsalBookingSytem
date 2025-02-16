@@ -4,7 +4,7 @@ const Review = require("../../models/reviewModel");
 
 const getGround = async (req, res) => {
   const grounds = await Ground.find().populate("slots").populate("reviews");
-  if (!grounds) {
+  if (grounds.length == 0) {
     return res.status(400).json({
       message: "Ground not found",
     });

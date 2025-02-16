@@ -12,6 +12,7 @@ app.use(express.static("uploads"));
 
 const authRoute = require("./routes/auth/authRoutes");
 const groundRoute = require("./routes/groundRoute/groundRoute");
+const slotRoute = require("./routes/slotRoute/slotRoute");
 
 //database connection
 connectDB(process.env.MONGO_URI);
@@ -19,6 +20,7 @@ connectDB(process.env.MONGO_URI);
 //routes
 app.use("/api", authRoute);
 app.use("/api", groundRoute);
+app.use("/api", slotRoute);
 
 app.get("/", (req, res) => {
   res.status(200).json({
