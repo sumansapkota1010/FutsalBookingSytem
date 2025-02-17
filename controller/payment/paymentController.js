@@ -2,6 +2,9 @@ const axios = require("axios");
 const Booking = require("../../models/bookingModel");
 const Payment = require("../../models/paymentModel");
 const Slot = require("../../models/slotModel");
+const User = require("../../models/userModel");
+const sendEmail = require("../../services/sendEmail");
+const sendSMS = require("../../services/sendSms");
 
 exports.initiateKhaltiPayment = async (req, res) => {
   const { bookingId, amount } = req.body;
@@ -88,12 +91,24 @@ exports.verifyPidx = async (req, res) => {
       booking.payment = payment._id;
       await booking.save();
     }
-
+    //slot ko record  update garne
     const slot = await Slot.findById(booking.slot);
     if (slot) {
       slot.isBooked = true;
       slot.bookedBy = booking.user;
       await slot.save();
+    }
+
+    const user = await User.findById(booking.user);
+    if (user) {
+      const emailOptions = {
+        email: "sumansapkota7777@gmail.com",
+        subject: "Payment Successful",
+        message: `Dear ${user.name},\n\nYour payment of NPR ${amount} for booking ${booking._id} has been successfully processed.\n\nThank you for choosing our service!`,
+      };
+      await sendEmail(emailOptions);
+
+      sendSMS(`${user.userPhoneNumber}`, "Your futsal is booked successfully!");
     }
 
     return res.status(200).json({
