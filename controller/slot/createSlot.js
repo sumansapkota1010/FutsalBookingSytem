@@ -19,6 +19,20 @@ const createSlot = async (req, res) => {
     });
   }
 
+  //same ground,date,starttime and end time already exists garxa ki gardaina check garne
+
+  const slotExists = await Slot.findOne({
+    ground,
+    date,
+    startTime,
+    endTime,
+  });
+  if (slotExists) {
+    return res.status(400).json({
+      message: "A slot with the same ground ,date and time already exists",
+    });
+  }
+
   // Create the slot
   const slot = await Slot.create({
     ground,
