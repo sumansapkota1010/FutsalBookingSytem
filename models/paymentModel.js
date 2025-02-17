@@ -11,12 +11,13 @@ const paymentSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["success", "failed", "completed"],
+    enum: ["pending", "completed", "failed"],
     default: "pending",
   },
   method: { type: String, enum: ["COD", "khalti"] },
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Payment", paymentSchema);
-const mongoose = require("mongoose");
+const Payment = mongoose.model("Payment", paymentSchema);
+
+module.exports = Payment;
