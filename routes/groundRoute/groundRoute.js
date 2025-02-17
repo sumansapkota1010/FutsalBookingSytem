@@ -13,7 +13,7 @@ const upload = multer({ storage: storage });
 const router = express.Router();
 
 router.route("/getground").get(isAuthenicated, catchAsync(getGround));
-console.log("createGround:", createGround);
+
 router
   .route("/createground")
   .post(

@@ -1,168 +1,111 @@
 const axios = require("axios");
-
+const Booking = require("../../models/bookingModel");
+const Payment = require("../../models/paymentModel");
 const Slot = require("../../models/slotModel");
 
-const bookingModel = require("../../models/bookingModel");
-
-// Initiate Khalti Payment
-const initiateKhaltiPayment = async (req, res) => {
-  const { bookingId } = req.body;
+exports.initiateKhaltiPayment = async (req, res) => {
+  const { bookingId, amount } = req.body;
   const userId = req.user._id;
 
-  // Validate input
-  if (!bookingId) {
-    return res.status(400).json({ message: "Please provide bookingId" });
+  if (!bookingId || !amount) {
+    return res.status(400).json({
+      message: "Please provide bookingId and amount",
+    });
   }
 
-  // Find the booking
-  const booking = await bookingModel.findById(bookingId).populate("slot");
-  console.log(booking);
+  const booking = await Booking.findById(bookingId);
   if (!booking) {
-    return res.status(404).json({ message: "Booking not found" });
+    return res.status(404).json({
+      message: "Booking not found",
+    });
   }
 
-  // Get the slot price
-  const slot = await Slot.findById(booking.slot);
-  if (!slot) {
-    return res.status(404).json({ message: "Slot not found" });
-  }
-
-  const amount = slot.price;
+  const payment = await Payment.create({
+    user: userId,
+    booking: bookingId,
+    amount,
+  });
 
   const data = {
-    return_url: "http://localhost:3000/success",
-    purchase_order_id: bookingId,
-    amount: amount * 100,
+    return_url: "http://localhost:3000/api/payment/success",
+    purchase_order_id: bookingId || 43,
+    amount: amount || 10,
     website_url: "http://localhost:3000/",
     purchase_order_name: "FutsalBooking_" + bookingId,
   };
 
-  // Initiate Khalti payment
   const response = await axios.post(
     "https://a.khalti.com/api/v2/epayment/initiate/",
     data,
     {
       headers: {
-        Authorization: process.env.KHALTI_SECRET_KEY,
+        Authorization: `Key ${process.env.KHALTI_SECRET_KEY}`,
       },
     }
   );
-  console.log(response.data);
-  return;
 
-  // Create a payment record
-  const payment = await Payment.create({
-    user: userId,
-    booking: bookingId,
-    amount: amount,
-    status: "pending", // Default status
-    method: "khalti",
-  });
-
-  // Save the pidx to the payment record
   payment.pidx = response.data.pidx;
   await payment.save();
-
-  // Return the payment URL to the frontend
-  res.status(200).json({
-    message: "Payment initiated successfully",
-    paymentUrl: response.data.payment_url,
-  });
+  res.redirect(response.data.payment_url);
+  console.log(response.data);
 };
 
-// Verify Khalti Payment
-const verifyKhaltiPayment = async (req, res) => {
-  const { pidx } = req.body;
-  const userId = req.user._id; // Assuming user ID is available from authentication middleware
+exports.verifyPidx = async (req, res) => {
+  const { pidx, amount } = req.query;
 
-  // Verify the payment with Khalti
+  //  Find payment record using pidx
+  const payment = await Payment.findOne({ pidx });
+
+  if (!payment) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Payment not found." });
+  }
+
   const response = await axios.post(
     "https://a.khalti.com/api/v2/epayment/lookup/",
     { pidx },
     {
       headers: {
-        Authorization: "key your_khalti_secret_key", // Replace with your Khalti secret key
+        Authorization: `Key ${process.env.KHALTI_SECRET_KEY}`,
       },
     }
   );
+  console.log(response.data.status);
 
-  if (response.data.status === "Completed") {
-    // Find the payment record
-    const payment = await Paymen.findOne({ pidx });
-    if (!payment) {
-      return res.status(404).json({ message: "Payment record not found" });
-    }
+  const paymentData = response.data;
 
-    // Update the payment status
+  if (paymentData.status === "Completed") {
+    // Update payment status in the database
     payment.status = "completed";
+    payment.amount = amount;
     await payment.save();
 
-    // Update the booking payment status
+    // Update the associated booking's status to "confirmed"
     const booking = await Booking.findById(payment.booking);
     if (booking) {
-      booking.payment = payment._id; // Link the payment to the booking
-      booking.status = "confirmed"; // Update booking status to confirmed
+      booking.status = "confirmed";
+      booking.payment = payment._id;
       await booking.save();
     }
 
-    res.status(200).json({ message: "Payment verified successfully" });
-  } else {
-    // Update the payment status to failed
-    const payment = await Payment.findOne({ pidx });
-    if (payment) {
-      payment.status = "failed";
-      await payment.save();
+    const slot = await Slot.findById(booking.slot);
+    if (slot) {
+      slot.isBooked = true;
+      slot.bookedBy = booking.user;
+      await slot.save();
     }
 
-    res.status(400).json({ message: "Payment verification failed" });
+    return res.status(200).json({
+      success: true,
+      message: "Payment verified and booking confirmed.",
+      payment,
+    });
+  } else {
+    return res.status(400).json({
+      success: false,
+      message: "Payment verification failed. Status is not completed.",
+      paymentData,
+    });
   }
-};
-
-// Create COD Payment
-const createCODPayment = async (req, res) => {
-  const { bookingId } = req.body;
-  const userId = req.user._id; // Assuming user ID is available from authentication middleware
-
-  // Validate input
-  if (!bookingId) {
-    return res.status(400).json({ message: "Please provide bookingId" });
-  }
-
-  // Find the booking
-  const booking = await Booking.findById(bookingId).populate("slot");
-  if (!booking) {
-    return res.status(404).json({ message: "Booking not found" });
-  }
-
-  // Get the slot price
-  const slot = await Slot.findById(booking.slot);
-  if (!slot) {
-    return res.status(404).json({ message: "Slot not found" });
-  }
-
-  const amount = slot.price; // Use the slot's price as the payment amount
-
-  // Create a COD payment record
-  const payment = await Payment.create({
-    user: userId,
-    booking: bookingId,
-    amount: amount,
-    status: "pending", // Default status
-    method: "COD",
-  });
-
-  // Update the booking payment status
-  booking.payment = payment._id; // Link the payment to the booking
-  booking.status = "confirmed"; // Update booking status to confirmed
-  await booking.save();
-
-  res
-    .status(201)
-    .json({ message: "COD payment created successfully", payment });
-};
-
-module.exports = {
-  initiateKhaltiPayment,
-  verifyKhaltiPayment,
-  createCODPayment,
 };

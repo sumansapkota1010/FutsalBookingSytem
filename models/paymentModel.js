@@ -7,6 +7,9 @@ const paymentSchema = new mongoose.Schema({
     ref: "Booking",
     required: true,
   },
+  pidx: {
+    type: String,
+  },
   amount: { type: Number, required: true },
 
   status: {
