@@ -8,13 +8,13 @@ const paymentSchema = new mongoose.Schema({
     required: true,
   },
   amount: { type: Number, required: true },
-  method: { type: String, enum: ["Khalti", "eSewa"], required: true },
+
   status: {
     type: String,
     enum: ["success", "failed", "completed"],
     default: "pending",
   },
-  paymentId: { type: String, required: true },
+  method: { type: String, enum: ["COD", "khalti"] },
   createdAt: { type: Date, default: Date.now },
 });
 
