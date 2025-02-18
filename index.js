@@ -15,6 +15,7 @@ const groundRoute = require("./routes/groundRoute/groundRoute");
 const slotRoute = require("./routes/slotRoute/slotRoute");
 const bookingRoute = require("./routes/bookingRoute/bookingRoute");
 const paymentRoute = require("./routes/paymentRoute/paymentRoute");
+const reviewRoute = require("./routes/reviewRoute/reviewRoute");
 
 //database connection
 connectDB(process.env.MONGO_URI);
@@ -25,6 +26,7 @@ app.use("/api", groundRoute);
 app.use("/api", slotRoute);
 app.use("/api", paymentRoute);
 app.use("/api", bookingRoute);
+app.use("/api", reviewRoute);
 
 app.get("/", (req, res) => {
   res.status(200).json({

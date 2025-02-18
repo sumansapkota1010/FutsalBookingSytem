@@ -11,7 +11,7 @@ const router = express.Router();
 
 router
   .route("/payment")
-  .post(isAuthenicated, restrictTo("admin"), catchAsync(initiateKhaltiPayment));
+  .post(isAuthenicated, catchAsync(initiateKhaltiPayment));
 
 router.route("/payment/success").get(catchAsync(verifyPidx));
 
