@@ -6,25 +6,22 @@ const isAuthenicated = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
-    return res.status(400).json({
-      message: "Please provide token",
+    return res.status(401).json({
+      message: "Unauthorized: No token provided",
     });
   }
-  //verify if the token is legit or not
+
   const decoded = await promisify(jwt.verify)(token, process.env.SECRET_KEY);
-  if (!decoded) {
-    return res.status(403).json({
-      message: "Don't try to  this",
-    });
-  }
-  // check if decoded.od(userID) exists in the user table
-  const doesUserExist = await User.findOne({ _id: decoded.id });
-  if (!doesUserExist) {
+
+  const user = await User.findById(decoded.id);
+  if (!user) {
     return res.status(404).json({
-      message: "User doesnot exists with that token/id",
+      message: "User does not exist with that token/id",
     });
   }
-  req.user = doesUserExist;
+
+  req.user = user;
+
   next();
 };
 

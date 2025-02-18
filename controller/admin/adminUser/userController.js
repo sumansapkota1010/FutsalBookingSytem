@@ -1,22 +1,18 @@
 const User = require("../../../models/userModel");
 
-exports.getUsers = async (req, res) => {
-  const userId = req.user.id;
-  const users = await User.find({ _id: { $ne: userId } }).select([
-    "+otp",
-    "+isOtpVerified",
-    "-__v",
-  ]);
-  if (users.length > 1) {
-    return res.status(200).json({
-      message: "Users fetched successfully",
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.status(200).json({
       data: users,
+      message: "All users fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching users",
+      error: error.message,
     });
   }
-  res.status(404).json({
-    message: "User Collection is empty",
-    data: [],
-  });
 };
 
 // delete User API
