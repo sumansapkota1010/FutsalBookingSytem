@@ -16,12 +16,21 @@ const createGround = async (req, res) => {
     location,
     pricePerHour,
     image,
+    capacity,
+    size,
     operatingHours,
     slots,
     reviews,
   } = req.body;
 
-  if (!name || !location || !pricePerHour || !operatingHours) {
+  if (
+    !name ||
+    !location ||
+    !pricePerHour ||
+    !operatingHours ||
+    !capacity ||
+    !size
+  ) {
     return res.status(400).json({
       message:
         "Please provide name, location, pricePerHour, and operatingHours",
@@ -34,6 +43,8 @@ const createGround = async (req, res) => {
     pricePerHour,
     image: "http://localhost:3000/" + filepath,
     operatingHours,
+    size,
+    capacity,
     slots,
     reviews,
   });

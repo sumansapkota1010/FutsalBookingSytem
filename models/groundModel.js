@@ -10,6 +10,14 @@ const groundSchema = new mongoose.Schema(
       openTime: { type: String, required: true },
       closeTime: { type: String, required: true },
     },
+    capacity: {
+      type: Number,
+      required: true,
+    },
+    size: {
+      type: String,
+      required: true,
+    },
     slots: [{ type: mongoose.Schema.Types.ObjectId, ref: "Slot" }],
     reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
   },
