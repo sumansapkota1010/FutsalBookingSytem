@@ -8,7 +8,7 @@ const adminSeeder = async () => {
     await User.create({
       userName: "admin",
       userEmail: "admin@gmail.com",
-      userPassword: bcrypt.hashSync("admin", 10),
+      userPassword: bcrypt.hashSync("admin12345", 10),
       userPhoneNumber: 9840300084,
       role: "admin",
     });
