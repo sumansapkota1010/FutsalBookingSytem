@@ -5,54 +5,83 @@ const Slot = require("../../models/slotModel");
 const User = require("../../models/userModel");
 const sendEmail = require("../../services/sendEmail");
 const sendSMS = require("../../services/sendSms");
+const { default: mongoose } = require("mongoose");
 
 exports.initiateKhaltiPayment = async (req, res) => {
-  const { bookingId, amount } = req.body;
+  const { bookingId } = req.params;
+  const { amount } = req.body;
   const userId = req.user._id;
 
+  // Validate input
   if (!bookingId || !amount) {
     return res.status(400).json({
       message: "Please provide bookingId and amount",
     });
   }
-
-  const booking = await Booking.findById(bookingId);
-  if (!booking) {
-    return res.status(404).json({
-      message: "Booking not found",
+  if (!mongoose.Types.ObjectId.isValid(bookingId)) {
+    return res.status(400).json({
+      message: "Invalid bookingId format",
     });
   }
 
-  const payment = await Payment.create({
-    user: userId,
-    booking: bookingId,
-    amount,
-  });
-
-  const data = {
-    return_url: "http://localhost:3000/api/payment/success",
-    purchase_order_id: bookingId || 43,
-    amount: amount || 10,
-    website_url: "http://localhost:3000/",
-    purchase_order_name: "FutsalBooking_" + bookingId,
-  };
-
-  const response = await axios.post(
-    "https://a.khalti.com/api/v2/epayment/initiate/",
-    data,
-    {
-      headers: {
-        Authorization: `Key ${process.env.KHALTI_SECRET_KEY}`,
-      },
+  try {
+    // Check if the booking exists
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({
+        message: "Booking not found",
+      });
     }
-  );
 
-  payment.pidx = response.data.pidx;
-  await payment.save();
-  res.redirect(response.data.payment_url);
-  console.log(response.data);
+    // Create a payment record
+    const payment = await Payment.create({
+      user: userId,
+      booking: bookingId,
+      amount,
+    });
+
+    // Prepare data for Khalti API
+    const data = {
+      return_url: "http://localhost:3000/api/payment/success", // Replace with your success URL
+      purchase_order_id: bookingId,
+      amount: amount * 100, // Convert amount to paisa (Khalti requires amount in paisa)
+      website_url: "http://localhost:3000/", // Replace with your website URL
+      purchase_order_name: "FutsalBooking_" + bookingId,
+    };
+
+    // Make request to Khalti API
+    const response = await axios.post(
+      "https://a.khalti.com/api/v2/epayment/initiate/",
+      data,
+      {
+        headers: {
+          Authorization: `Key ${process.env.KHALTI_SECRET_KEY}`,
+        },
+      }
+    );
+
+    // Save pidx to payment record
+    payment.pidx = response.data.pidx;
+    await payment.save();
+
+    // Send payment_url back to the frontend
+    res.status(200).json({
+      payment_url: response.data.payment_url,
+    });
+  } catch (error) {
+    console.error("Error initiating Khalti payment:", error);
+
+    // Log the full error response from Khalti API
+    if (error.response) {
+      console.error("Khalti API response:", error.response.data);
+    }
+
+    res.status(500).json({
+      message: "Failed to initiate payment",
+      error: error.message,
+    });
+  }
 };
-
 exports.verifyPidx = async (req, res) => {
   const { pidx, amount } = req.query;
 

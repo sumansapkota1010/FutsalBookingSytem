@@ -6,7 +6,6 @@ const createSlot = require("../../controller/slot/createSlot");
 const getSlotsByGroundAndDate = require("../../controller/slot/getSlotByGroundAndDate");
 const getAllSlot = require("../../controller/slot/getAllSlot");
 
-
 const router = express.Router();
 
 router
@@ -14,8 +13,6 @@ router
   .post(isAuthenicated, restrictTo("admin"), catchAsync(createSlot));
 
 router.route("/slot").get(isAuthenicated, catchAsync(getSlotsByGroundAndDate));
-router
-  .route("/slot/all")
-  .get(isAuthenicated, restrictTo("admin"), catchAsync(getAllSlot));
+router.route("/slot/all").get(isAuthenicated, catchAsync(getAllSlot));
 
 module.exports = router;

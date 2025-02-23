@@ -12,7 +12,7 @@ const cancelBooking = async (req, res) => {
   }
   const booking = await Booking.findById(bookingId);
   if (!booking) {
-    res.status(400).json({
+    return res.status(400).json({
       message: "Booking not found",
     });
   }

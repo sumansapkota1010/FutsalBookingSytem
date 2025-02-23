@@ -10,7 +10,7 @@ const restrictTo = require("../../middleware/restrictTo");
 const router = express.Router();
 
 router
-  .route("/payment")
+  .route("/payment/:bookingId")
   .post(isAuthenicated, catchAsync(initiateKhaltiPayment));
 
 router.route("/payment/success").get(catchAsync(verifyPidx));
