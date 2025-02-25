@@ -15,7 +15,7 @@ const createBooking = async (req, res) => {
   if (!slotExists) {
     return res.status(404).json({
       message: "Slot not found",
-    }); 
+    });
   }
 
   if (slotExists.isBooked) {

@@ -45,7 +45,7 @@ exports.deleteProfile = async (req, res) => {
   const userId = req.user.id;
 
   await User.findByIdAndDelete(userId);
-  res.status(400).json({
+  res.status(200).json({
     message: "Profile deleted successfully",
     data: null,
   });
