@@ -14,6 +14,19 @@ const updateGround = async (req, res) => {
       });
     }
 
+    let slotObjectIds = [];
+    let reviewObjectIds = [];
+
+    if (slots && Array.isArray(slots)) {
+      slotObjectIds = slots.map((slot) => mongoose.Types.ObjectId(slot));
+    }
+
+    if (reviews && Array.isArray(reviews)) {
+      reviewObjectIds = reviews.map((review) =>
+        mongoose.Types.ObjectId(review)
+      );
+    }
+
     const oldData = await Ground.findById(id);
     if (!oldData) {
       return res.status(404).json({
@@ -49,8 +62,8 @@ const updateGround = async (req, res) => {
         pricePerHour,
         image: newImage,
         operatingHours,
-        slots,
-        reviews,
+        slots: slotObjectIds,
+        reviews: reviewObjectIds,
       },
       { new: true, runValidators: true }
     );

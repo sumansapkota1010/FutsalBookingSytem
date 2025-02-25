@@ -7,8 +7,8 @@ const groundSchema = new mongoose.Schema(
     pricePerHour: { type: Number, required: true },
     image: { type: String },
     operatingHours: {
-      openTime: { type: String, required: true },
-      closeTime: { type: String, required: true },
+      type: String,
+      required: true,
     },
     capacity: {
       type: Number,
