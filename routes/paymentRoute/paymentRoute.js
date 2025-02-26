@@ -6,6 +6,8 @@ const {
   verifyPidx,
 } = require("../../controller/payment/paymentController");
 const restrictTo = require("../../middleware/restrictTo");
+const getAllBookings = require("../../controller/booking/getAllBooking");
+const getAllPayment = require("../../controller/payment/getAllPayment");
 
 const router = express.Router();
 
@@ -14,5 +16,9 @@ router
   .post(isAuthenicated, catchAsync(initiateKhaltiPayment));
 
 router.route("/payment/success").get(catchAsync(verifyPidx));
+
+router
+  .route("/payment/getAll")
+  .get(isAuthenicated, restrictTo("admin"), catchAsync(getAllPayment));
 
 module.exports = router;

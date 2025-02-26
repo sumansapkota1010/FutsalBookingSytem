@@ -3,7 +3,7 @@ const Slot = require("../../models/slotModel");
 const getAllSlot = async (req, res) => {
   const slots = await Slot.find({})
     .populate("ground", "name location")
-    .populate("bookedBy", "name email");
+    .populate("bookedBy", " userName userEmail");
   if (slots.length == 0) {
     return res.status(400).json({
       message: "Slot not found",
