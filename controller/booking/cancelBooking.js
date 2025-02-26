@@ -16,11 +16,7 @@ const cancelBooking = async (req, res) => {
       message: "Booking not found",
     });
   }
-  if (booking.user.toString() !== userId.toString()) {
-    return res.status(403).json({
-      message: "You are not authorized to cancel this  booking",
-    });
-  }
+
   if (booking.status == "cancelled") {
     return res.status(400).json({
       message: "Booking is already cancelled",
