@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Ground = require("../../models/groundModel");
 const Slot = require("../../models/slotModel");
 
@@ -9,9 +10,10 @@ const createSlot = async (req, res) => {
       message: "Please provide ground, start time, end time, date, and price",
     });
   }
+  const groundId = new mongoose.Types.ObjectId(ground);
 
   // Find the specific ground by ID
-  const groundExists = await Ground.findById(ground);
+  const groundExists = await Ground.findById(groundId);
 
   if (!groundExists) {
     return res.status(404).json({
@@ -22,7 +24,7 @@ const createSlot = async (req, res) => {
   //same ground,date,starttime and end time already exists garxa ki gardaina check garne
 
   const slotExists = await Slot.findOne({
-    ground,
+    ground: groundId,
     date,
     startTime,
     endTime,
@@ -35,7 +37,7 @@ const createSlot = async (req, res) => {
 
   // Create the slot
   const slot = await Slot.create({
-    ground,
+    ground: groundId,
     startTime,
     endTime,
     date,
