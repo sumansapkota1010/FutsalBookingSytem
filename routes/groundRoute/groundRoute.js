@@ -22,7 +22,7 @@ router
     upload.single("groundImage"),
     catchAsync(createGround)
   );
-router.route("/singleground/:id").get(isAuthenicated, singleGround);
+router.route("/singleground/:id").get(isAuthenicated, catchAsync(singleGround));
 router
   .route("/updateground/:id")
   .put(

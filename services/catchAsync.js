@@ -1,18 +1,21 @@
 module.exports = (fn) => {
   return (req, res, next) => {
-    // Check if fn is a function
     if (typeof fn !== "function") {
       return res.status(500).json({
         message: "Invalid function passed to catchAsync",
       });
     }
 
-    // Execute the function and catch errors
     fn(req, res, next).catch((err) => {
-      console.error("Error in catchAsync:", err); // Log the error for debugging
-      return res.status(500).json({
-        message: err.message,
-        fullError: err,
+      // Log the error for debugging purposes
+      console.error("Error in catchAsync:", err);
+
+      // Determine the status code based on the error type
+      const statusCode = err.statusCode || 500;
+
+      // Send a response to the client
+      res.status(statusCode).json({
+        message: err.message || "Something went wrong",
       });
     });
   };
