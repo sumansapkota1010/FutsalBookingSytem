@@ -20,7 +20,7 @@ const deleteBooking = async (req, res) => {
   const slot = await Slot.findById(booking.slot);
   if (slot) {
     slot.isBooked = false;
-    slot.bookedBy = null;
+
     await slot.save();
   }
 

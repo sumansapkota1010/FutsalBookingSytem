@@ -59,7 +59,7 @@ const createGround = async (req, res) => {
       name,
       location,
       pricePerHour,
-      image: "http://localhost:3000/" + filepath, // Assuming image URL structure is correct
+      image: "http://localhost:3000/" + filepath,
       operatingHours,
       size,
       capacity,

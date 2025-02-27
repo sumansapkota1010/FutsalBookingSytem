@@ -40,12 +40,11 @@ exports.initiateKhaltiPayment = async (req, res) => {
       amount,
     });
 
-    // Prepare data for Khalti API
     const data = {
-      return_url: "http://localhost:3000/api/payment/success", // Replace with your success URL
+      return_url: "http://localhost:3000/api/payment/success",
       purchase_order_id: bookingId,
-      amount: amount * 100, // Convert amount to paisa (Khalti requires amount in paisa)
-      website_url: "http://localhost:3000/", // Replace with your website URL
+      amount: amount,
+      website_url: "http://localhost:3000/",
       purchase_order_name: "FutsalBooking_" + bookingId,
     };
 
