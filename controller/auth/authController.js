@@ -102,29 +102,41 @@ exports.forgetPassword = async (req, res) => {
 //verify otp
 exports.verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
+
   if (!email || !otp) {
     return res.status(400).json({
-      message: "Please provide email and otp",
+      message: "Please provide email and OTP",
     });
   }
 
-  // check if that otp is correct or not of that email
-  const userExists = await User.find({ userEmail: email });
-  if (userExists.length == 0) {
-    return res.status(400).json({
-      message: "Email is not registered",
+  try {
+    // Check if the user exists
+    const userExists = await User.findOne({ userEmail: email });
+    console.log(userExists.otp);
+    if (!userExists) {
+      return res.status(400).json({
+        message: "Email is not registered",
+      });
+    }
+
+    // Check if the OTP is correct
+    if (userExists.otp !== Number(otp)) {
+      return res.status(400).json({
+        message: "Invalid OTP",
+      });
+    }
+
+    // Clear the OTP after successful verification
+    userExists.otp = undefined;
+    await userExists.save();
+
+    return res.status(200).json({
+      message: "OTP is correct",
     });
-  }
-  if (userExists[0].otp !== otp) {
-    res.status(400).json({
-      message: "Invalid otp",
-    });
-  } else {
-    //dispost the otp so that it cannot be used next time the same otp
-    userExists[0].otp = undefined;
-    await userExists[0].save();
-    res.status(200).json({
-      message: "Otp is correct",
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    return res.status(500).json({
+      message: "Internal server error",
     });
   }
 };

@@ -130,7 +130,7 @@ exports.verifyPidx = async (req, res) => {
     const user = await User.findById(booking.user);
     if (user) {
       const emailOptions = {
-        email: "sumansapkota7777@gmail.com",
+        email: user.userEmail,
         subject: "Payment Successful",
         message: `Dear ${user.name},\n\nYour payment of NPR ${amount} for booking ${booking._id} has been successfully processed.\n\nThank you for choosing our service!`,
       };
@@ -140,13 +140,11 @@ exports.verifyPidx = async (req, res) => {
     }
 
     return res.status(200).json({
-      success: true,
       message: "Payment verified and booking confirmed.",
       payment,
     });
   } else {
     return res.status(400).json({
-      success: false,
       message: "Payment verification failed. Status is not completed.",
       paymentData,
     });
