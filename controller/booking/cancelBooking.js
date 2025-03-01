@@ -1,4 +1,5 @@
 const Booking = require("../../models/bookingModel");
+const Payment = require("../../models/paymentModel");
 const Slot = require("../../models/slotModel");
 
 const cancelBooking = async (req, res) => {
@@ -30,6 +31,11 @@ const cancelBooking = async (req, res) => {
     slot.isBooked = false;
     slot.bookedBy = null;
     await slot.save();
+  }
+  const payment = await Payment.findById(booking.payment);
+  if (payment) {
+    payment.status = "refunded";
+    await payment.save();
   }
   res.status(200).json({
     message: "Booking cancelled successfull",

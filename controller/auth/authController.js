@@ -145,7 +145,7 @@ exports.resetPassword = async (req, res) => {
   const { email, newPassword, confirmPassword } = req.body;
   if (!email || !newPassword || !confirmPassword) {
     return res.status(400).json({
-      message: "Please provide email,newpassword and confirm password",
+      message: "Please provide email,newpassw ord and confirm password",
     });
   }
   if (newPassword !== confirmPassword) {

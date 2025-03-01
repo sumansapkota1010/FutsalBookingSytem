@@ -9,7 +9,10 @@ const getUserBookings = async (req, res) => {
     .populate("slot", "startTime endTime date price")
     .populate("payment", "amount status method");
   console.log(bookings);
-  res.status(200).json(bookings);
+  res.status(200).json({
+    message: "Booking fetched successfully",
+    data: bookings,
+  });
 };
 
 module.exports = getUserBookings;
