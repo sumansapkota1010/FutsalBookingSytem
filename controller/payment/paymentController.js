@@ -135,8 +135,6 @@ exports.verifyPidx = async (req, res) => {
         message: `Dear ${user.name},\n\nYour payment of NPR ${amount} for booking ${booking._id} has been successfully processed.\n\nThank you for choosing our service!`,
       };
       await sendEmail(emailOptions);
-
-      sendSMS(`${user.userPhoneNumber}`, "Your futsal is booked successfully!");
     }
 
     return res.status(200).json({
