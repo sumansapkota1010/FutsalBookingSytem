@@ -4,7 +4,7 @@ const Payment = require("../../models/paymentModel");
 const Slot = require("../../models/slotModel");
 const User = require("../../models/userModel");
 const sendEmail = require("../../services/sendEmail");
-const sendSMS = require("../../services/sendSms");
+
 const { default: mongoose } = require("mongoose");
 
 exports.initiateKhaltiPayment = async (req, res) => {
@@ -82,7 +82,7 @@ exports.initiateKhaltiPayment = async (req, res) => {
   }
 };
 exports.verifyPidx = async (req, res) => {
-  const { pidx, amount } = req.query;
+  const { pidx, amount, status, mobile } = req.query;
 
   //  Find payment record using pidx
   const payment = await Payment.findOne({ pidx });
@@ -137,14 +137,12 @@ exports.verifyPidx = async (req, res) => {
       await sendEmail(emailOptions);
     }
 
-    return res.status(200).json({
-      message: "Payment verified and booking confirmed.",
-      payment,
-    });
+    return res.redirect(
+      `http://localhost:5173/payment-success?pidx=${pidx}&bookingId=${booking._id}&amount=${amount}&status=${status}&mobile=${mobile}`
+    );
   } else {
-    return res.status(400).json({
-      message: "Payment verification failed. Status is not completed.",
-      paymentData,
-    });
+    return res
+      .status(400)
+      .json({ success: false, message: "Payment verification failed." });
   }
 };
