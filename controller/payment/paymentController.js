@@ -37,13 +37,13 @@ exports.initiateKhaltiPayment = async (req, res) => {
     const payment = await Payment.create({
       user: userId,
       booking: bookingId,
-      amount,
+      amount: amount,
     });
 
     const data = {
       return_url: "http://localhost:3000/api/payment/success",
       purchase_order_id: bookingId,
-      amount: amount,
+      amount: amount * 100,
       website_url: "http://localhost:3000/",
       purchase_order_name: "FutsalBooking_" + bookingId,
     };
