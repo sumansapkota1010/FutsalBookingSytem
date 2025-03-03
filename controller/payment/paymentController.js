@@ -43,7 +43,7 @@ exports.initiateKhaltiPayment = async (req, res) => {
     const data = {
       return_url: "http://localhost:3000/api/payment/success",
       purchase_order_id: bookingId,
-      amount: amount * 100,
+      amount: amount * 100 /* In paisa */,
       website_url: "http://localhost:3000/",
       purchase_order_name: "FutsalBooking_" + bookingId,
     };
@@ -109,7 +109,7 @@ exports.verifyPidx = async (req, res) => {
   if (paymentData.status === "Completed") {
     // Update payment status in the database
     payment.status = "completed";
-    payment.amount = amount;
+    payment.amount = amount / 100;
     await payment.save();
 
     // Update the associated booking's status to "confirmed"
