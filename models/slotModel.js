@@ -18,6 +18,10 @@ const slotSchema = new mongoose.Schema({
   price: { type: Number, required: true },
 });
 
+/* slotSchema.index(
+  { ground: 1, date: 1, startTime: 1, endTime: 1 },
+  { unique: true }
+); */
 const Slot = mongoose.model("Slot", slotSchema);
 
 module.exports = Slot;
