@@ -132,7 +132,11 @@ exports.verifyPidx = async (req, res) => {
       const emailOptions = {
         email: user.userEmail,
         subject: "Payment Successful",
-        message: `Dear ${user.userName},\n\nYour payment of NPR ${amount} for booking ${booking._id} has been successfully processed.\n\nThank you for choosing our service!`,
+        message: `Dear ${user.userName},\n\nYour payment of NPR ${
+          amount / 100
+        } for booking ${
+          booking._id
+        } has been successfully processed.\n\nThank you for choosing our service!`,
       };
       await sendEmail(emailOptions);
     }
