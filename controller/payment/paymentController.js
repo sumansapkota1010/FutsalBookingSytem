@@ -41,10 +41,11 @@ exports.initiateKhaltiPayment = async (req, res) => {
     });
 
     const data = {
-      return_url: "http://localhost:3000/api/payment/success",
+      return_url:
+        "https://futsalbookingsystem.onrender.com/api/api/payment/success",
       purchase_order_id: bookingId,
       amount: amount * 100 /* In paisa */,
-      website_url: "http://localhost:3000/",
+      website_url: "https://futsalbookingsystem.onrender.com/",
       purchase_order_name: "FutsalBooking_" + bookingId,
     };
 
@@ -142,7 +143,7 @@ exports.verifyPidx = async (req, res) => {
     }
 
     return res.redirect(
-      `https://futsalbookingsystem.onrender.com/api/payment-success?pidx=${pidx}&bookingId=${booking._id}&amount=${amount}&status=${status}&mobile=${mobile}`
+      `https://futsal-booking-system-frontend.vercel.app/payment-success?pidx=${pidx}&bookingId=${booking._id}&amount=${amount}&status=${status}&mobile=${mobile}`
     );
   } else {
     return res
