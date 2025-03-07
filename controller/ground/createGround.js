@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Ground = require("../../models/groundModel");
+const cloudinary = require("cloudinary").v2;
+const multer = require("multer");
 
 const createGround = async (req, res) => {
   const file = req.file;
@@ -11,14 +13,17 @@ const createGround = async (req, res) => {
     filepath =
       "https://www.playspots.in/booking-spot/sangzika-futsal-ground-tuivamit-aizawl-mizoram/";
   } else {
-    filepath = req.file.filename;
+    const result = await cloudinary.uploader.upload(file.path, {
+      folder: "ground_images",
+    });
+    filepath = result.secure_url;
   }
 
   const {
     name,
     location,
     pricePerHour,
-    image,
+
     capacity,
     size,
     operatingHours,
@@ -59,7 +64,7 @@ const createGround = async (req, res) => {
       name,
       location,
       pricePerHour,
-      image: "http://localhost:3000/" + filepath,
+      image: filepath,
       operatingHours,
       size,
       capacity,
