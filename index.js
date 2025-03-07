@@ -6,7 +6,7 @@ const app = express();
 require("dotenv").config();
 app.use(
   cors({
-    origin: "https://futsal-booking-system-frontend.vercel.app/",
+    origin: "https://futsal-booking-system-frontend.vercel.app",
     credentials: true,
   })
 );
