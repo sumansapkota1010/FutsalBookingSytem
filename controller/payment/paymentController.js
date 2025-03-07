@@ -42,7 +42,7 @@ exports.initiateKhaltiPayment = async (req, res) => {
 
     const data = {
       return_url:
-        "https://futsalbookingsystem.onrender.com/api/api/payment/success",
+        "https://futsalbookingsystem.onrender.com/api/payment/success",
       purchase_order_id: bookingId,
       amount: amount * 100 /* In paisa */,
       website_url: "https://futsalbookingsystem.onrender.com/",
@@ -84,6 +84,13 @@ exports.initiateKhaltiPayment = async (req, res) => {
 };
 exports.verifyPidx = async (req, res) => {
   const { pidx, amount, status, mobile } = req.query;
+  if (!pidx || !amount || !status || !mobile) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Missing required query parameters: pidx, amount, status, or mobile.",
+    });
+  }
 
   //  Find payment record using pidx
   const payment = await Payment.findOne({ pidx });
