@@ -142,7 +142,7 @@ exports.verifyPidx = async (req, res) => {
     }
 
     return res.redirect(
-      `http://localhost:5173/payment-success?pidx=${pidx}&bookingId=${booking._id}&amount=${amount}&status=${status}&mobile=${mobile}`
+      `https://futsalbookingsystem.onrender.com/api/payment-success?pidx=${pidx}&bookingId=${booking._id}&amount=${amount}&status=${status}&mobile=${mobile}`
     );
   } else {
     return res

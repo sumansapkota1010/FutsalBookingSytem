@@ -6,11 +6,21 @@ const app = express();
 require("dotenv").config();
 app.use(
   cors({
-    origin: "https://futsal-booking-system-frontend.vercel.app",
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "http://localhost:5173", // Local development
+        "https://futsal-booking-system-frontend.vercel.app", // Production
+      ];
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow the request
+      } else {
+        callback(new Error("Not allowed by CORS")); // Block the request
+      }
+    },
     credentials: true,
   })
 );
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
