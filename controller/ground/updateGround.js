@@ -1,5 +1,7 @@
 const Ground = require("../../models/groundModel");
 const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
+const multer = require("multer");
 
 const updateGround = async (req, res) => {
   try {
@@ -34,23 +36,18 @@ const updateGround = async (req, res) => {
       });
     }
 
-    let newImage = oldData.image;
-
-    // If a new file is uploaded, delete the old one
-    if (req.file && req.file.filename) {
-      const oldGroundImage = oldData.image;
-      const lengthToCut = "http://localhost:3000/".length;
-      const finalFilePathAfterCut = oldGroundImage.slice(lengthToCut);
-
-      fs.unlink(finalFilePathAfterCut, (err) => {
-        if (err) {
-          console.log("Error deleting file:", err);
-        } else {
-          console.log("File deleted successfully");
-        }
+    let newImageUrl;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "ground_images",
       });
+      newImageUrl = result.secure_url;
 
-      newImage = "http://localhost:3000/" + req.file.filename;
+      if (oldData.groundImage) {
+        const publicId = oldData.groundImage.split("/".pop().split(".")[0]);
+        await cloudinary.uploader.destroy(`ground_images/${publicId}`);
+      }
+      fs.unlinkSync(req.file.path);
     }
 
     // Update the ground entry
